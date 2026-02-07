@@ -1,188 +1,199 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
-    <title>5隊對決：點擊晉級</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>月酌新春活動 - 對戰表</title>
     <style>
-        :root {
-            --primary-gold: #ffd700;
-            --bg-dark: #121212;
-            --slot-bg: #2a2a2a;
-        }
-
         body {
-            background-color: var(--bg-dark);
-            color: white;
-            font-family: "PingFang TC", "Microsoft JhengHei", sans-serif;
+            font-family: "Microsoft JhengHei", Arial, sans-serif;
+            background-color: #f4f4f4;
             display: flex;
             flex-direction: column;
             align-items: center;
-            min-height: 100vh;
-            margin: 0;
             padding: 20px;
         }
 
-        .tournament {
-            display: flex;
-            align-items: center;
-            gap: 50px;
-            margin-top: 40px;
+        .header {
+            background-color: #1e5bb9;
+            color: white;
+            padding: 15px 40px;
+            border-radius: 8px;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
-        .round {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-around;
-            height: 450px;
+        .info {
+            text-align: center;
+            margin-bottom: 20px;
+            line-height: 1.6;
+            color: #333;
         }
 
-        /* 對戰組別容器 */
+        /* 淘汰表容器 */
+        .bracket-container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 40px;
+            margin-top: 20px;
+        }
+
+        .group-title {
+            background-color: #ffe0b2;
+            padding: 5px 25px;
+            border: 1px solid #ffb74d;
+            font-weight: bold;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+
+        /* 隊伍輸入框樣式 */
+        input {
+            background-color: #ffe0b2;
+            border: 1px solid #ffb74d;
+            padding: 8px;
+            text-align: center;
+            width: 100px;
+            font-size: 14px;
+            border-radius: 4px;
+            outline: none;
+        }
+
+        input:focus {
+            background-color: #fff3e0;
+            border-color: #fb8c00;
+        }
+
+        /* 對戰結構佈局 */
         .matchup {
             display: flex;
             flex-direction: column;
-            gap: 5px;
-            position: relative;
-        }
-
-        /* 隊伍格子 */
-        .team-slot {
-            width: 140px;
-            height: 40px;
-            background: var(--slot-bg);
-            border: 2px solid #444;
-            border-radius: 6px;
-            display: flex;
             align-items: center;
-            padding: 0 10px;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             position: relative;
-            overflow: hidden;
         }
 
-        .team-slot:hover {
-            border-color: var(--primary-gold);
-            background: #333;
-            transform: scale(1.05);
+        .rounds-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
         }
 
-        .team-slot input {
-            background: transparent;
-            border: none;
-            color: white;
+        /* 連接線邏輯 */
+        .round {
+            display: flex;
+            gap: 20px;
+            position: relative;
+        }
+
+        .connector-v {
+            border: 1px solid #666;
+            border-bottom: none;
+            height: 20px;
+            width: 100px; /* 寬度對應下方隊伍中間 */
+            margin-top: 5px;
+        }
+
+        .battle-text {
+            font-size: 12px;
+            color: #555;
+            margin: 5px 0;
+        }
+
+        /* 冠軍區域 */
+        .champion-area {
+            margin-top: 50px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             width: 100%;
-            cursor: pointer;
-            font-size: 14px;
-            pointer-events: none; /* 讓點擊穿透到 div */
         }
 
-        /* 晉級動畫：向右衝出 */
-        .advancing {
-            animation: dash-right 0.5s forwards;
-            background: var(--primary-gold) !important;
+        .final-connector {
+            width: 2px;
+            height: 40px;
+            background-color: #666;
         }
 
-        @keyframes dash-right {
-            0% { transform: translateX(0); opacity: 1; }
-            50% { transform: translateX(30px); opacity: 0.5; }
-            100% { transform: translateX(0); opacity: 1; }
-        }
-
-        /* 連接線 */
-        .matchup::after {
-            content: "";
-            position: absolute;
-            right: -50px;
-            top: 50%;
-            width: 50px;
-            height: 2px;
-            background: #444;
-            z-index: -1;
-        }
-
-        .champion-slot {
-            border: 2px dashed var(--primary-gold);
-            height: 60px;
-            width: 180px;
-        }
-
-        .champion-slot input {
-            font-size: 20px;
+        .champion-box {
+            background-color: #ffe0b2;
+            border: 2px solid #ffb74d;
+            padding: 10px 30px;
             font-weight: bold;
-            text-align: center;
-            color: var(--primary-gold);
+            font-size: 18px;
+            margin-top: 10px;
         }
-
-        h1 { margin-bottom: 0; color: var(--primary-gold); }
-        p { color: #888; font-size: 0.9rem; }
     </style>
 </head>
 <body>
 
-    <h1>ADCCA 晉級挑戰賽</h1>
-    <p>💡 直接「點擊隊伍框」即可讓該隊晉級下一輪</p>
+    <div class="header">月酌新春活動“看起來很會打”</div>
 
-    <div class="tournament">
-        <div class="round">
-            <div style="height: 120px;"></div>
-            <div class="matchup">
-                <div class="team-slot" onclick="promote(this, 'semi-4')"><input type="text" value="紙熊"></div>
-                <div class="team-slot" onclick="promote(this, 'semi-4')"><input type="text" value="浯玖"></div>
-            </div>
-            <div class="matchup">
-                <div class="team-slot" onclick="promote(this, 'final-2')"><input type="text" value="斬九"></div>
-                <div class="team-slot" onclick="promote(this, 'final-2')"><input type="text" id="semi-4" placeholder="等待預賽..." readonly></div>
+    <div class="info">
+        1/31 晚間打完幫戰<br>
+        21:30 DC 直播抽出各隊組別
+    </div>
+
+    <div style="display: flex; gap: 100px;">
+        <div style="text-align: center;">
+            <div class="group-title">A 組</div>
+            <div class="rounds-wrapper">
+                <div style="display: flex; gap: 30px;">
+                    <div class="matchup">
+                        <div style="display: flex; gap: 10px;">
+                            <input type="text" value="第一隊">
+                            <input type="text" value="第二隊">
+                        </div>
+                        <div class="battle-text">勝者晉級</div>
+                        <div class="connector-v"></div>
+                        <input type="text" placeholder="第X隊">
+                        <div class="battle-text">三戰兩勝</div>
+                    </div>
+                    <div class="matchup" style="justify-content: flex-end;">
+                        <input type="text" value="第三隊" style="margin-bottom: 45px;">
+                    </div>
+                </div>
+                <div class="matchup">
+                    <div class="connector-v" style="width: 150px;"></div>
+                    <input type="text" placeholder="第X隊">
+                </div>
             </div>
         </div>
 
-        <div class="round">
-            <div class="matchup">
-                <div class="team-slot" onclick="promote(this, 'final-1')"><input type="text" value="仁仔"></div>
-                <div class="team-slot" onclick="promote(this, 'final-1')"><input type="text" value="睡蓮"></div>
+        <div style="text-align: center;">
+            <div class="group-title">B 組</div>
+            <div class="rounds-wrapper">
+                <div style="display: flex; gap: 30px;">
+                    <div class="matchup" style="justify-content: flex-end;">
+                        <input type="text" value="第四隊" style="margin-bottom: 45px;">
+                    </div>
+                    <div class="matchup">
+                        <div style="display: flex; gap: 10px;">
+                            <input type="text" value="第五隊">
+                            <input type="text" value="第六隊">
+                        </div>
+                        <div class="battle-text">勝者晉級</div>
+                        <div class="connector-v"></div>
+                        <input type="text" placeholder="第X隊">
+                        <div class="battle-text">三戰兩勝</div>
+                    </div>
+                </div>
+                <div class="matchup">
+                    <div class="connector-v" style="width: 150px;"></div>
+                    <input type="text" placeholder="第X隊">
+                </div>
             </div>
-            <div class="matchup">
-                <div class="team-slot" onclick="promote(this, 'final-2')"><input type="text" value="月燁"></div>
-                <div class="team-slot" onclick="promote(this, 'final-2')"><input type="text" id="semi-4" placeholder="等待預賽..." readonly></div>
-            </div>
-        </div>
-
-        <div class="round">
-            <div class="matchup">
-                <div class="team-slot" style="height:50px" onclick="promote(this, 'champion')"><input type="text" id="final-1" placeholder="四強勝者 1" readonly></div>
-                <div class="team-slot" style="height:50px" onclick="promote(this, 'champion')"><input type="text" id="final-2" placeholder="四強勝者 2" readonly></div>
-            </div>
-        </div>
-
-        <div class="round">
-            <div class="team-slot champion-slot" id="confetti-trigger">
-                <input type="text" id="champion" placeholder="🏆 總冠軍" readonly>
-            </div>
-            <button onclick="location.reload()" style="margin-top:20px; background:none; border:1px solid #555; color:#888; cursor:pointer; padding:5px 10px; border-radius:4px;">重置比賽</button>
         </div>
     </div>
 
-    <script>
-        function promote(el, targetId) {
-            const teamName = el.querySelector('input').value;
-            const targetInput = document.getElementById(targetId);
+    <div class="champion-area">
+        <div style="display: flex; justify-content: space-between; width: 450px; border: 1px solid #666; border-bottom: none; height: 30px;"></div>
+        <div class="battle-text">五戰三勝</div>
+        <div class="final-connector"></div>
+        <input type="text" class="champion-box" value="冠軍">
+    </div>
 
-            if (!teamName || teamName.includes("等待")) return;
-
-            // 播放動畫
-            el.classList.add('advancing');
-            
-            // 動畫結束後填入數據
-            setTimeout(() => {
-                targetInput.value = teamName;
-                targetInput.parentElement.style.borderColor = '#ffd700';
-                el.classList.remove('advancing');
-                
-                // 如果是冠軍，加一點震動感
-                if(targetId === 'champion') {
-                    targetInput.parentElement.style.boxShadow = '0 0 30px #ffd700';
-                }
-            }, 500);
-        }
-    </script>
 </body>
 </html>
